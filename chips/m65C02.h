@@ -2,7 +2,7 @@
 /*#
     # m65C02.h
 
-    MOS Technology 65C02 emulator.
+	WDC 65C02 emulator.
 
 	Based on M6502 / M6510 emulator by Andre Weissflog, 2018-2023.
 	Just adding extra instructions really
@@ -2373,15 +2373,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0xB1<<3)|5: c->A=_GD();_NZ(c->A);_FETCH();break;
         case (0xB1<<3)|6: assert(false);break;
         case (0xB1<<3)|7: assert(false);break;
-    /* JAM INVALID (undoc) */
-        case (0xB2<<3)|0: _SA(c->PC);break;
-        case (0xB2<<3)|1: _SAD(0xFFFF,0xFF);c->IR--;break;
-        case (0xB2<<3)|2: assert(false);break;
-        case (0xB2<<3)|3: assert(false);break;
-        case (0xB2<<3)|4: assert(false);break;
-        case (0xB2<<3)|5: assert(false);break;
-        case (0xB2<<3)|6: assert(false);break;
-        case (0xB2<<3)|7: assert(false);break;
+    /* LDA (zp) - 65C02 instruction */
+		case (0xB2<<3) | 0: _SA(c->PC++); break;
+		case (0xB2<<3) | 1: c->AD = _GD(); _SA(c->AD); break;
+		case (0xB2<<3) | 2: _SA((c->AD + 1) & 0xFF); c->AD = _GD(); break;
+		case (0xB2<<3) | 3: c->AD |= _GD() << 8; _SA((c->AD & 0xFF00) | ((c->AD) & 0xFF)); c->IR += (~((c->AD >> 8) - ((c->AD) >> 8))) & 1; break;
+		case (0xB2<<3) | 4: _SA(c->AD); break;
+		case (0xB2<<3) | 5: c->A = _GD(); _NZ(c->A); _FETCH(); break;
+		case (0xB2<<3) | 6: assert(false); break;
+		case (0xB2<<3) | 7: assert(false); break;
     /* LAX (zp),Y (undoc) */
         case (0xB3<<3)|0: _SA(c->PC++);break;
         case (0xB3<<3)|1: c->AD=_GD();_SA(c->AD);break;
