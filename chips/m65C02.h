@@ -3,6 +3,7 @@
     # m65C02.h
 
 	WDC 65C02 emulator.
+	Docs: http://www.6502.org/tutorials/65c02opcodes.html
 
 	Based on M6502 / M6510 emulator by Andre Weissflog, 2018-2023.
 	Just adding extra instructions really
@@ -1581,15 +1582,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0x59<<3)|5: assert(false);break;
         case (0x59<<3)|6: assert(false);break;
         case (0x59<<3)|7: assert(false);break;
-    /* NOP  (undoc) */
-        case (0x5A<<3)|0: _SA(c->PC);break;
-        case (0x5A<<3)|1: _FETCH();break;
-        case (0x5A<<3)|2: assert(false);break;
-        case (0x5A<<3)|3: assert(false);break;
-        case (0x5A<<3)|4: assert(false);break;
-        case (0x5A<<3)|5: assert(false);break;
-        case (0x5A<<3)|6: assert(false);break;
-        case (0x5A<<3)|7: assert(false);break;
+    /* PHY  (M65C02) */
+		case (0x5A << 3) | 0: _SA(c->PC); break;
+		case (0x5A << 3) | 1: _SAD(0x0100 | c->S--, c->Y); _WR(); break;
+		case (0x5A << 3) | 2: _FETCH(); break;
+		case (0x5A << 3) | 3: assert(false); break;
+		case (0x5A << 3) | 4: assert(false); break;
+		case (0x5A << 3) | 5: assert(false); break;
+		case (0x5A << 3) | 6: assert(false); break;
+		case (0x5A << 3) | 7: assert(false); break;
     /* SRE abs,Y (undoc) */
         case (0x5B<<3)|0: _SA(c->PC++);break;
         case (0x5B<<3)|1: _SA(c->PC++);c->AD=_GD();break;
@@ -1869,15 +1870,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0x79<<3)|5: assert(false);break;
         case (0x79<<3)|6: assert(false);break;
         case (0x79<<3)|7: assert(false);break;
-    /* NOP  (undoc) */
-        case (0x7A<<3)|0: _SA(c->PC);break;
-        case (0x7A<<3)|1: _FETCH();break;
-        case (0x7A<<3)|2: assert(false);break;
-        case (0x7A<<3)|3: assert(false);break;
-        case (0x7A<<3)|4: assert(false);break;
-        case (0x7A<<3)|5: assert(false);break;
-        case (0x7A<<3)|6: assert(false);break;
-        case (0x7A<<3)|7: assert(false);break;
+    /* PLY  (M65C02) */
+		case (0x7A << 3) | 0: _SA(c->PC); break;
+		case (0x7A << 3) | 1: _SA(0x0100 | c->S++); break;
+		case (0x7A << 3) | 2: _SA(0x0100 | c->S); break;
+		case (0x7A << 3) | 3: c->Y = _GD(); _NZ(c->Y); _FETCH(); break;
+		case (0x7A << 3) | 4: assert(false); break;
+		case (0x7A << 3) | 5: assert(false); break;
+		case (0x7A << 3) | 6: assert(false); break;
+		case (0x7A << 3) | 7: assert(false); break;
     /* RRA abs,Y (undoc) */
         case (0x7B<<3)|0: _SA(c->PC++);break;
         case (0x7B<<3)|1: _SA(c->PC++);c->AD=_GD();break;
@@ -2733,15 +2734,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0xD9<<3)|5: assert(false);break;
         case (0xD9<<3)|6: assert(false);break;
         case (0xD9<<3)|7: assert(false);break;
-    /* NOP  (undoc) */
-        case (0xDA<<3)|0: _SA(c->PC);break;
-        case (0xDA<<3)|1: _FETCH();break;
-        case (0xDA<<3)|2: assert(false);break;
-        case (0xDA<<3)|3: assert(false);break;
-        case (0xDA<<3)|4: assert(false);break;
-        case (0xDA<<3)|5: assert(false);break;
-        case (0xDA<<3)|6: assert(false);break;
-        case (0xDA<<3)|7: assert(false);break;
+    /* PHX  (M65C02) */
+		case (0xDA << 3) | 0: _SA(c->PC); break;
+		case (0xDA << 3) | 1: _SAD(0x0100 | c->S--, c->X); _WR(); break;
+		case (0xDA << 3) | 2: _FETCH(); break;
+		case (0xDA << 3) | 3: assert(false); break;
+		case (0xDA << 3) | 4: assert(false); break;
+		case (0xDA << 3) | 5: assert(false); break;
+		case (0xDA << 3) | 6: assert(false); break;
+		case (0xDA << 3) | 7: assert(false); break;
     /* DCP abs,Y (undoc) */
         case (0xDB<<3)|0: _SA(c->PC++);break;
         case (0xDB<<3)|1: _SA(c->PC++);c->AD=_GD();break;
@@ -3021,15 +3022,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0xF9<<3)|5: assert(false);break;
         case (0xF9<<3)|6: assert(false);break;
         case (0xF9<<3)|7: assert(false);break;
-    /* NOP  (undoc) */
-        case (0xFA<<3)|0: _SA(c->PC);break;
-        case (0xFA<<3)|1: _FETCH();break;
-        case (0xFA<<3)|2: assert(false);break;
-        case (0xFA<<3)|3: assert(false);break;
-        case (0xFA<<3)|4: assert(false);break;
-        case (0xFA<<3)|5: assert(false);break;
-        case (0xFA<<3)|6: assert(false);break;
-        case (0xFA<<3)|7: assert(false);break;
+    /* PLX  (M65C02) */
+		case (0xFA << 3) | 0: _SA(c->PC); break;
+		case (0xFA << 3) | 1: _SA(0x0100 | c->S++); break;
+		case (0xFA << 3) | 2: _SA(0x0100 | c->S); break;
+		case (0xFA << 3) | 3: c->X = _GD(); _NZ(c->X); _FETCH(); break;
+		case (0xFA << 3) | 4: assert(false); break;
+		case (0xFA << 3) | 5: assert(false); break;
+		case (0xFA << 3) | 6: assert(false); break;
+		case (0xFA << 3) | 7: assert(false); break;
     /* ISB abs,Y (undoc) */
         case (0xFB<<3)|0: _SA(c->PC++);break;
         case (0xFB<<3)|1: _SA(c->PC++);c->AD=_GD();break;
