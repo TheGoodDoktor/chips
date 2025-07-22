@@ -17,6 +17,33 @@
 	*$12 ORA(zp) - Logical Inclusive OR (Zero Page)
 	*$F2 SBC(zp)	- Subtract with Carry (Zero Page)
 	*$92 STA(zp) - Store Accumulator (Zero Page)
+	
+	$89 BIT im
+	$34 BIT zp,X
+	$3C BIT abs,X
+
+	*$3A DEC
+	*$1A INC
+	
+	$7C JMP (abs,X)
+
+	$80 BRA
+
+	*$DA PHX
+	*$5A PHY
+	*$FA PLX
+	*$7A PLY
+
+	*$64 STZ zp
+	*$74 STZ zp,X
+	*$9C STZ abs
+	*$9E STZ abs,Y
+
+	$14 TRB zp
+	$1C TRB abs
+
+	$04 TSB zp
+	$0C TSB abs
 
     Project repo: https://github.com/floooh/chips/
 
@@ -1016,15 +1043,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0x19<<3)|5: assert(false);break;
         case (0x19<<3)|6: assert(false);break;
         case (0x19<<3)|7: assert(false);break;
-    /* NOP  (undoc) */
-        case (0x1A<<3)|0: _SA(c->PC);break;
-        case (0x1A<<3)|1: _FETCH();break;
-        case (0x1A<<3)|2: assert(false);break;
-        case (0x1A<<3)|3: assert(false);break;
-        case (0x1A<<3)|4: assert(false);break;
-        case (0x1A<<3)|5: assert(false);break;
-        case (0x1A<<3)|6: assert(false);break;
-        case (0x1A<<3)|7: assert(false);break;
+    /* INC - M65C02 instruction */
+		case (0x1A << 3) | 0: _SA(c->PC); break;
+		case (0x1A << 3) | 1: c->A++; _NZ(c->A); _FETCH(); break;
+		case (0x1A << 3) | 2: assert(false); break;
+		case (0x1A << 3) | 3: assert(false); break;
+		case (0x1A << 3) | 4: assert(false); break;
+		case (0x1A << 3) | 5: assert(false); break;
+		case (0x1A << 3) | 6: assert(false); break;
+		case (0x1A << 3) | 7: assert(false); break;
     /* SLO abs,Y (undoc) */
         case (0x1B<<3)|0: _SA(c->PC++);break;
         case (0x1B<<3)|1: _SA(c->PC++);c->AD=_GD();break;
@@ -1304,15 +1331,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0x39<<3)|5: assert(false);break;
         case (0x39<<3)|6: assert(false);break;
         case (0x39<<3)|7: assert(false);break;
-    /* NOP  (undoc) */
-        case (0x3A<<3)|0: _SA(c->PC);break;
-        case (0x3A<<3)|1: _FETCH();break;
-        case (0x3A<<3)|2: assert(false);break;
-        case (0x3A<<3)|3: assert(false);break;
-        case (0x3A<<3)|4: assert(false);break;
-        case (0x3A<<3)|5: assert(false);break;
-        case (0x3A<<3)|6: assert(false);break;
-        case (0x3A<<3)|7: assert(false);break;
+    /* DEC - M65C02 instruction */
+		case (0x3A << 3) | 0: _SA(c->PC); break;
+		case (0x3A << 3) | 1: c->A--; _NZ(c->A); _FETCH(); break;
+		case (0x3A << 3) | 2: assert(false); break;
+		case (0x3A << 3) | 3: assert(false); break;
+		case (0x3A << 3) | 4: assert(false); break;
+		case (0x3A << 3) | 5: assert(false); break;
+		case (0x3A << 3) | 6: assert(false); break;
+		case (0x3A << 3) | 7: assert(false); break;
     /* RLA abs,Y (undoc) */
         case (0x3B<<3)|0: _SA(c->PC++);break;
         case (0x3B<<3)|1: _SA(c->PC++);c->AD=_GD();break;
@@ -1682,15 +1709,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0x63<<3)|5: c->AD=_GD();_WR();break;
         case (0x63<<3)|6: c->AD=_m65C02_ror(c,c->AD);_SD(c->AD);_m65C02_adc(c,c->AD);_WR();break;
         case (0x63<<3)|7: _FETCH();break;
-    /* NOP zp (undoc) */
-        case (0x64<<3)|0: _SA(c->PC++);break;
-        case (0x64<<3)|1: _SA(_GD());break;
-        case (0x64<<3)|2: _FETCH();break;
-        case (0x64<<3)|3: assert(false);break;
-        case (0x64<<3)|4: assert(false);break;
-        case (0x64<<3)|5: assert(false);break;
-        case (0x64<<3)|6: assert(false);break;
-        case (0x64<<3)|7: assert(false);break;
+    /* STZ zp - 65C02 instruction */
+		case (0x64 << 3) | 0: _SA(c->PC++); break;
+		case (0x64 << 3) | 1: _SA(_GD()); _SD(0); _WR(); break;
+		case (0x64 << 3) | 2: _FETCH(); break;
+		case (0x64 << 3) | 3: assert(false); break;
+		case (0x64 << 3) | 4: assert(false); break;
+		case (0x64 << 3) | 5: assert(false); break;
+		case (0x64 << 3) | 6: assert(false); break;
+		case (0x64 << 3) | 7: assert(false); break;
     /* ADC zp */
         case (0x65<<3)|0: _SA(c->PC++);break;
         case (0x65<<3)|1: _SA(_GD());break;
@@ -1826,15 +1853,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0x73<<3)|5: c->AD=_GD();_WR();break;
         case (0x73<<3)|6: c->AD=_m65C02_ror(c,c->AD);_SD(c->AD);_m65C02_adc(c,c->AD);_WR();break;
         case (0x73<<3)|7: _FETCH();break;
-    /* NOP zp,X (undoc) */
-        case (0x74<<3)|0: _SA(c->PC++);break;
-        case (0x74<<3)|1: c->AD=_GD();_SA(c->AD);break;
-        case (0x74<<3)|2: _SA((c->AD+c->X)&0x00FF);break;
-        case (0x74<<3)|3: _FETCH();break;
-        case (0x74<<3)|4: assert(false);break;
-        case (0x74<<3)|5: assert(false);break;
-        case (0x74<<3)|6: assert(false);break;
-        case (0x74<<3)|7: assert(false);break;
+    /* STZ zp,X - 65C02 Instruction */
+		case (0x74 << 3) | 0: _SA(c->PC++); break;
+		case (0x74 << 3) | 1: c->AD = _GD(); _SA(c->AD); break;
+		case (0x74 << 3) | 2: _SA((c->AD + c->X) & 0x00FF); _SD(0); _WR(); break;
+		case (0x74 << 3) | 3: _FETCH(); break;
+		case (0x74 << 3) | 4: assert(false); break;
+		case (0x74 << 3) | 5: assert(false); break;
+		case (0x74 << 3) | 6: assert(false); break;
+		case (0x74 << 3) | 7: assert(false); break;
     /* ADC zp,X */
         case (0x75<<3)|0: _SA(c->PC++);break;
         case (0x75<<3)|1: c->AD=_GD();_SA(c->AD);break;
@@ -2186,15 +2213,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0x9B<<3)|5: assert(false);break;
         case (0x9B<<3)|6: assert(false);break;
         case (0x9B<<3)|7: assert(false);break;
-    /* SHY abs,X (undoc) */
-        case (0x9C<<3)|0: _SA(c->PC++);break;
-        case (0x9C<<3)|1: _SA(c->PC++);c->AD=_GD();break;
-        case (0x9C<<3)|2: c->AD|=_GD()<<8;_SA((c->AD&0xFF00)|((c->AD+c->X)&0xFF));break;
-        case (0x9C<<3)|3: _SA(c->AD+c->X);_SD(c->Y&(uint8_t)((_GA()>>8)+1));_WR();break;
-        case (0x9C<<3)|4: _FETCH();break;
-        case (0x9C<<3)|5: assert(false);break;
-        case (0x9C<<3)|6: assert(false);break;
-        case (0x9C<<3)|7: assert(false);break;
+    /* STZ abs - M65C02 Instruction */
+		case (0x9C << 3) | 0: _SA(c->PC++); break;
+		case (0x9C << 3) | 1: _SA(c->PC++); c->AD = _GD(); break;
+		case (0x9C << 3) | 2: _SA((_GD() << 8) | c->AD); _SD(0); _WR(); break;
+		case (0x9C << 3) | 3: _FETCH(); break;
+		case (0x9C << 3) | 4: assert(false); break;
+		case (0x9C << 3) | 5: assert(false); break;
+		case (0x9C << 3) | 6: assert(false); break;
+		case (0x9C << 3) | 7: assert(false); break;
     /* STA abs,X */
         case (0x9D<<3)|0: _SA(c->PC++);break;
         case (0x9D<<3)|1: _SA(c->PC++);c->AD=_GD();break;
@@ -2204,15 +2231,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0x9D<<3)|5: assert(false);break;
         case (0x9D<<3)|6: assert(false);break;
         case (0x9D<<3)|7: assert(false);break;
-    /* SHX abs,Y (undoc) */
-        case (0x9E<<3)|0: _SA(c->PC++);break;
-        case (0x9E<<3)|1: _SA(c->PC++);c->AD=_GD();break;
-        case (0x9E<<3)|2: c->AD|=_GD()<<8;_SA((c->AD&0xFF00)|((c->AD+c->Y)&0xFF));break;
-        case (0x9E<<3)|3: _SA(c->AD+c->Y);_SD(c->X&(uint8_t)((_GA()>>8)+1));_WR();break;
-        case (0x9E<<3)|4: _FETCH();break;
-        case (0x9E<<3)|5: assert(false);break;
-        case (0x9E<<3)|6: assert(false);break;
-        case (0x9E<<3)|7: assert(false);break;
+	/* STZ abs,X - M65C02 Instruction */
+		case (0x9E << 3) | 0: _SA(c->PC++); break;
+		case (0x9E << 3) | 1: _SA(c->PC++); c->AD = _GD(); break;
+		case (0x9E << 3) | 2: c->AD |= _GD() << 8; _SA((c->AD & 0xFF00) | ((c->AD + c->X) & 0xFF)); break;
+		case (0x9E << 3) | 3: _SA(c->AD + c->X); _SD(0); _WR(); break;
+		case (0x9E << 3) | 4: _FETCH(); break;
+		case (0x9E << 3) | 5: assert(false); break;
+		case (0x9E << 3) | 6: assert(false); break;
+		case (0x9E << 3) | 7: assert(false); break;
     /* SHA abs,Y (undoc) */
         case (0x9F<<3)|0: _SA(c->PC++);break;
         case (0x9F<<3)|1: _SA(c->PC++);c->AD=_GD();break;
