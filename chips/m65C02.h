@@ -8,10 +8,10 @@
 	Based on M6502 / M6510 emulator by Andre Weissflog, 2018-2023.
 	Just adding extra instructions really
 
-	Extra Instructions
-	$72 ADC(zp) - Add with Carry (Zero Page)
-	$32 AND(zp) - Logical AND (Zero Page)
-	$D2 CMP(zp) - Compare with Accumulator (Zero Page)
+	Extra Instructions (* marks implemented)
+	*$72 ADC(zp) - Add with Carry (Zero Page)
+	*$32 AND(zp) - Logical AND (Zero Page)
+	*$D2 CMP(zp) - Compare with Accumulator (Zero Page)
 	$52 EOR(zp) - Exclusive OR (Zero Page)
 	$B2 LDA(zp) - Load Accumulator (Zero Page)
 	$12 ORA(zp) - Logical Inclusive OR (Zero Page)
@@ -1232,15 +1232,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0x31<<3)|5: c->A&=_GD();_NZ(c->A);_FETCH();break;
         case (0x31<<3)|6: assert(false);break;
         case (0x31<<3)|7: assert(false);break;
-    /* JAM INVALID (undoc) */
-        case (0x32<<3)|0: _SA(c->PC);break;
-        case (0x32<<3)|1: _SAD(0xFFFF,0xFF);c->IR--;break;
-        case (0x32<<3)|2: assert(false);break;
-        case (0x32<<3)|3: assert(false);break;
-        case (0x32<<3)|4: assert(false);break;
-        case (0x32<<3)|5: assert(false);break;
-        case (0x32<<3)|6: assert(false);break;
-        case (0x32<<3)|7: assert(false);break;
+    /* AND (zp) */
+		case (0x32 << 3) | 0: _SA(c->PC++); break;
+		case (0x32 << 3) | 1: c->AD = _GD(); _SA(c->AD); break;
+		case (0x32 << 3) | 2: _SA((c->AD + 1) & 0xFF); c->AD = _GD(); break;
+		case (0x32 << 3) | 3: c->AD |= _GD() << 8; _SA((c->AD & 0xFF00) | ((c->AD) & 0xFF)); c->IR += (~((c->AD >> 8) - ((c->AD) >> 8))) & 1; break;
+		case (0x32 << 3) | 4: _SA(c->AD); break;
+		case (0x32 << 3) | 5: c->A &= _GD(); _NZ(c->A); _FETCH(); break;
+		case (0x32 << 3) | 6: assert(false); break;
+		case (0x32 << 3) | 7: assert(false); break;
     /* RLA (zp),Y (undoc) */
         case (0x33<<3)|0: _SA(c->PC++);break;
         case (0x33<<3)|1: c->AD=_GD();_SA(c->AD);break;
@@ -1808,15 +1808,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0x71<<3)|5: _m65C02_adc(c,_GD());_FETCH();break;
         case (0x71<<3)|6: assert(false);break;
         case (0x71<<3)|7: assert(false);break;
-    /* JAM INVALID (undoc) */
-        case (0x72<<3)|0: _SA(c->PC);break;
-        case (0x72<<3)|1: _SAD(0xFFFF,0xFF);c->IR--;break;
-        case (0x72<<3)|2: assert(false);break;
-        case (0x72<<3)|3: assert(false);break;
-        case (0x72<<3)|4: assert(false);break;
-        case (0x72<<3)|5: assert(false);break;
-        case (0x72<<3)|6: assert(false);break;
-        case (0x72<<3)|7: assert(false);break;
+    /* ADC (zp) */
+		case (0x72 << 3) | 0: _SA(c->PC++); break;
+		case (0x72 << 3) | 1: c->AD = _GD(); _SA(c->AD); break;
+		case (0x72 << 3) | 2: _SA((c->AD + 1) & 0xFF); c->AD = _GD(); break;
+		case (0x72 << 3) | 3: c->AD |= _GD() << 8; _SA((c->AD & 0xFF00) | ((c->AD) & 0xFF)); c->IR += (~((c->AD >> 8) - ((c->AD) >> 8))) & 1; break;
+		case (0x72 << 3) | 4: _SA(c->AD); break;
+		case (0x72 << 3) | 5: _m65C02_adc(c, _GD()); _FETCH(); break;
+		case (0x72 << 3) | 6: assert(false); break;
+		case (0x72 << 3) | 7: assert(false); break;
     /* RRA (zp),Y (undoc) */
         case (0x73<<3)|0: _SA(c->PC++);break;
         case (0x73<<3)|1: c->AD=_GD();_SA(c->AD);break;
@@ -2672,15 +2672,15 @@ uint64_t m65C02_tick(m65C02_t* c, uint64_t pins) {
         case (0xD1<<3)|5: _m65C02_cmp(c, c->A, _GD());_FETCH();break;
         case (0xD1<<3)|6: assert(false);break;
         case (0xD1<<3)|7: assert(false);break;
-    /* JAM INVALID (undoc) */
-        case (0xD2<<3)|0: _SA(c->PC);break;
-        case (0xD2<<3)|1: _SAD(0xFFFF,0xFF);c->IR--;break;
-        case (0xD2<<3)|2: assert(false);break;
-        case (0xD2<<3)|3: assert(false);break;
-        case (0xD2<<3)|4: assert(false);break;
-        case (0xD2<<3)|5: assert(false);break;
-        case (0xD2<<3)|6: assert(false);break;
-        case (0xD2<<3)|7: assert(false);break;
+    /* CMP (zp) */
+		case (0xD2 << 3) | 0: _SA(c->PC++); break;
+		case (0xD2 << 3) | 1: c->AD = _GD(); _SA(c->AD); break;
+		case (0xD2 << 3) | 2: _SA((c->AD + 1) & 0xFF); c->AD = _GD(); break;
+		case (0xD2 << 3) | 3: c->AD |= _GD() << 8; _SA((c->AD & 0xFF00) | ((c->AD) & 0xFF)); c->IR += (~((c->AD >> 8) - ((c->AD) >> 8))) & 1; break;
+		case (0xD2 << 3) | 4: _SA(c->AD); break;
+		case (0xD2 << 3) | 5: _m65C02_cmp(c, c->A, _GD()); _FETCH(); break;
+		case (0xD2 << 3) | 6: assert(false); break;
+		case (0xD2 << 3) | 7: assert(false); break;
     /* DCP (zp),Y (undoc) */
         case (0xD3<<3)|0: _SA(c->PC++);break;
         case (0xD3<<3)|1: c->AD=_GD();_SA(c->AD);break;
