@@ -8,6 +8,16 @@
 	Based on M6502 / M6510 emulator by Andre Weissflog, 2018-2023.
 	Just adding extra instructions really
 
+	Extra Instructions
+	$72 ADC(zp) - Add with Carry (Zero Page)
+	$32 AND(zp) - Logical AND (Zero Page)
+	$D2 CMP(zp) - Compare with Accumulator (Zero Page)
+	$52 EOR(zp) - Exclusive OR (Zero Page)
+	$B2 LDA(zp) - Load Accumulator (Zero Page)
+	$12 ORA(zp) - Logical Inclusive OR (Zero Page)
+	$F2 SBC(zp)	- Subtract with Carry (Zero Page)
+	$92 STA(zp) - Store Accumulator (Zero Page)
+
     Project repo: https://github.com/floooh/chips/
 
     NOTE: this file is code-generated from m6502.template.h and m65C02_gen.py
